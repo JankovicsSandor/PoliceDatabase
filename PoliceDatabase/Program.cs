@@ -1,4 +1,5 @@
-﻿using PoliceDatabase.Models;
+﻿using PoliceDatabase.DataReader;
+using PoliceDatabase.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,48 +10,12 @@ namespace PoliceDatabase
     {
         static void Main(string[] args)
         {
-            string line;
-            StreamReader central_copy = new StreamReader(@"./central_data.csv");
-            central_copy.ReadLine();
+            PoliceDataReader policeDataReader = new PoliceDataReader();
+            ClientDataReader clientDataReader = new ClientDataReader();
             CarWorkLogger logger = new CarWorkLogger("output.txt");
-            Dictionary<string, CentralDatabaseCopyItem> centralDataCopy = new Dictionary<string, CentralDatabaseCopyItem>();
-            CentralDatabaseCopyItem oneRow;
-            while ((line = central_copy.ReadLine()) != null)
-            {
-                var row = line.Split(';');
-                oneRow = new CentralDatabaseCopyItem()
-                {
-                    PlateNum = row[0],
-                    Owner = row[1],
-                    CarType = row[2],
-                    CarStatus = row[3]
-                };
-                centralDataCopy.Add(oneRow.PlateNum, oneRow);
-            }
+            Dictionary<string, CentralDatabaseCopyItem> centralDataCopy = policeDataReader.ReadPoliceDatabase(@"./central_data.csv");
 
-            central_copy.Close();
-            StreamReader clientsData = new StreamReader(@"./clients.csv");
-            clientsData.ReadLine();
-            HashSet<Client> clients = new HashSet<Client>();
-            Client clientRow;
-            while ((line = clientsData.ReadLine()) != null)
-            {
-                var row = line.Split(';');
-                clientRow = new Client()
-                {
-                    PlateNum = row[0],
-                    Name = row[1],
-                    CarType = row[2],
-                    FrontLeftPressure = double.Parse(row[3]),
-                    FrontRightPressure = double.Parse(row[4]),
-                    BackLeftPressure = double.Parse(row[5]),
-                    BackRightPressure = double.Parse(row[6]),
-
-                };
-                clients.Add(clientRow);
-            }
-
-            central_copy.Close();
+            HashSet<Client> clients = clientDataReader.ReadClientData(@"./clients.csv");
 
             foreach (Client client in clients)
             {

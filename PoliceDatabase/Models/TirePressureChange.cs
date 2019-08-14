@@ -20,15 +20,15 @@ namespace PoliceDatabase.Models
             StringBuilder sb = new StringBuilder();
             if (Amount == null)
             {
-                sb.Append($"\t {Tire}: Nem igényel munkát");
+                sb.Append($"\t{Tire}: Nem igényel munkát");
             }
             else if (Amount > 0)
             {
-                sb.Append($"\t {Tire}: +{Amount} bar");
+                sb.Append($"\t{Tire}: +{Amount} bar");
             }
             else if (Amount < 0)
             {
-                sb.Append($"\t {Tire}: -{Amount} bar");
+                sb.Append($"\t{Tire}: -{Amount} bar");
             }
 
             return sb.ToString();

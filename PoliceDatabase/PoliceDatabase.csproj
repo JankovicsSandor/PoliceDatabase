@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Program.cs~RF106c4cb8.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="central_data.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

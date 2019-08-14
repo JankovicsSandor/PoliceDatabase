@@ -7,7 +7,7 @@ namespace PoliceDatabase.Models
     public class Client
     {
         public string PlateNum { get; set; }
-        public string Owner { get; set; }
+        public string Name { get; set; }
         public string CarType { get; set; }
         public double FrontLeftPressure { get; set; }
         public double FrontRightPressure { get; set; }

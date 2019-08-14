@@ -1,5 +1,4 @@
 ﻿using PoliceDatabase.Models;
-using PoliceDatabase.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,8 @@ namespace PoliceDatabase
             string line;
             StreamReader central_copy = new StreamReader(@"./central_data.csv");
             central_copy.ReadLine();
-            HashSet<CentralDatabaseCopyItem> centralDataCopy = new HashSet<CentralDatabaseCopyItem>();
+            CarWorkLogger logger = new CarWorkLogger("output.txt");
+            Dictionary<string, CentralDatabaseCopyItem> centralDataCopy = new Dictionary<string, CentralDatabaseCopyItem>();
             CentralDatabaseCopyItem oneRow;
             while ((line = central_copy.ReadLine()) != null)
             {
@@ -23,9 +23,9 @@ namespace PoliceDatabase
                     PlateNum = row[0],
                     Owner = row[1],
                     CarType = row[2],
-                    MarkedAsStolen = row[3].Contains("Nem") ? false : true
+                    CarStatus = row[3]
                 };
-                centralDataCopy.Add(oneRow);
+                centralDataCopy.Add(oneRow.PlateNum, oneRow);
             }
 
             central_copy.Close();
@@ -39,7 +39,7 @@ namespace PoliceDatabase
                 clientRow = new Client()
                 {
                     PlateNum = row[0],
-                    Owner = row[1],
+                    Name = row[1],
                     CarType = row[2],
                     FrontLeftPressure = double.Parse(row[3]),
                     FrontRightPressure = double.Parse(row[4]),
@@ -51,16 +51,64 @@ namespace PoliceDatabase
             }
 
             central_copy.Close();
-            foreach (Client item in clients)
+
+            foreach (Client client in clients)
             {
-                if (!item.BackPressureOk)
+                IList<TirePressureChange> changes = new List<TirePressureChange>();
+                logger.LogClientDetail(client);
+                double leftDiff, rightDiff;
+                if (!client.BackPressureOk)
                 {
+                    // leftDiff = client.BackLeftPressure;
+                }
+                else
+                {
+                    changes.Add(new TirePressureChange("Bal hátsó", null));
+                    changes.Add(new TirePressureChange("Jobb hátsó", null));
                 }
 
-                if (!item.FrontPressureOk)
+                if (!client.FrontPressureOk)
                 {
                 }
+                else
+                {
+                    changes.Add(new TirePressureChange("Bal első", null));
+                    changes.Add(new TirePressureChange("Jobb első", null));
+                }
+
+                logger.LogTirePressureChangeWork(changes);
+
+                CentralDatabaseCopyItem item;
+                if (centralDataCopy.TryGetValue(client.PlateNum, out item))
+                {
+                    IList<string> problems = new List<string>();
+                    if (item.CarStatus == "Nem lopott")
+                    {
+                        if (item.CarType.ToLower() != client.CarType.ToLower())
+                        {
+                            problems.Add("Rossz autó márka!");
+                        }
+                        if (item.Owner.ToLower() != client.Name.ToLower())
+                        {
+                            problems.Add("Rossz sofőr!");
+                        }
+                        if (problems.Count == 0)
+                        {
+                            logger.LogCarStatus(item.CarStatus);
+                        }
+                        else
+                        {
+                            logger.LogCarStatus("GYANÚS", problems);
+                        }
+                    }
+                    else
+                    {
+                        logger.LogCarStatus("RIASZTÁS");
+                    }
+
+                }
             }
+
             Console.WriteLine("Done");
             Console.ReadKey();
         }

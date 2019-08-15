@@ -35,7 +35,7 @@ namespace PoliceDatabase
         public void LogCarStatus(string status)
         {
             streamWriter.WriteLine($"Autó jogi státusza:");
-            streamWriter.WriteLine($"\t{status}");
+            streamWriter.WriteLine($"\t{status}\n");
         }
 
         public void LogCarStatus(string status, IList<string> problem)

@@ -1,5 +1,6 @@
 ﻿using PoliceDatabase.DataReader;
 using PoliceDatabase.Models;
+using PoliceDatabase.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,28 +18,33 @@ namespace PoliceDatabase
 
             HashSet<Client> clients = clientDataReader.ReadClientData(@"./clients.csv");
 
+            PressureCalculator pressureCalc = new PressureCalculator();
             foreach (Client client in clients)
             {
-                IList<TirePressureChange> changes = new List<TirePressureChange>();
+                List<TirePressureChange> changes = new List<TirePressureChange>();
                 logger.LogClientDetail(client);
-                double leftDiff, rightDiff;
+                if (!client.FrontPressureOk)
+                {
+                    pressureCalc.LeftTirePressure = client.FrontLeftPressure;
+                    pressureCalc.RightTirePressure = client.FrontRightPressure;
+                    changes.AddRange(pressureCalc.GetTirePressureDiffToAvg("első"));
+                }
+                else
+                {
+                    changes.Add(new TirePressureChange("Bal első", null));
+                    changes.Add(new TirePressureChange("Jobb első", null));
+                }
                 if (!client.BackPressureOk)
                 {
+                    pressureCalc.LeftTirePressure = client.BackLeftPressure;
+                    pressureCalc.RightTirePressure = client.BackRightPressure;
+                    changes.AddRange(pressureCalc.GetTirePressureDiffToAvg("hátsó"));
                     // leftDiff = client.BackLeftPressure;
                 }
                 else
                 {
                     changes.Add(new TirePressureChange("Bal hátsó", null));
                     changes.Add(new TirePressureChange("Jobb hátsó", null));
-                }
-
-                if (!client.FrontPressureOk)
-                {
-                }
-                else
-                {
-                    changes.Add(new TirePressureChange("Bal első", null));
-                    changes.Add(new TirePressureChange("Jobb első", null));
                 }
 
                 logger.LogTirePressureChangeWork(changes);

@@ -15,7 +15,8 @@ namespace PoliceDatabase.Models
         {
             get
             {
-                return FrontLeftPressure < 1.5 || FrontLeftPressure > 3 || FrontRightPressure < 1.5 || FrontRightPressure > 3;
+                double avg = (FrontLeftPressure + FrontRightPressure) / 2;
+                return FrontLeftPressure == avg && FrontRightPressure == avg;
             }
         }
         public double BackLeftPressure { get; set; }
@@ -24,7 +25,8 @@ namespace PoliceDatabase.Models
         {
             get
             {
-                return BackLeftPressure < 1.5 || BackLeftPressure > 3 || BackRightPressure < 1.5 || BackRightPressure > 3;
+                double avg = (BackLeftPressure + BackRightPressure) / 2;
+                return BackLeftPressure == avg && BackRightPressure == avg;
             }
         }
     }

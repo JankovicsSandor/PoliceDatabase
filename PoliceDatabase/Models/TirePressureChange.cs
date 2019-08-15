@@ -28,7 +28,7 @@ namespace PoliceDatabase.Models
             }
             else if (Amount < 0)
             {
-                sb.Append($"\t{Tire}: -{Amount} bar");
+                sb.Append($"\t{Tire}: {Amount} bar");
             }
 
             return sb.ToString();

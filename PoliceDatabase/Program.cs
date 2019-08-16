@@ -13,11 +13,13 @@ namespace PoliceDatabase
         {
             PoliceDataReader policeDataReader = new PoliceDataReader();
             ClientDataReader clientDataReader = new ClientDataReader();
-            CarWorkLogger logger = new CarWorkLogger("output.txt");
+            
+            //Read the provided data
             Dictionary<string, CentralDatabaseCopyItem> centralDataCopy = policeDataReader.ReadPoliceDatabase(@"./central_data.csv");
-
             HashSet<Client> clients = clientDataReader.ReadClientData(@"./clients.csv");
 
+            // Initialize the logger
+            CarWorkLogger logger = new CarWorkLogger("output.txt");
             PressureCalculator pressureCalc = new PressureCalculator();
             foreach (Client client in clients)
             {
@@ -79,7 +81,7 @@ namespace PoliceDatabase
 
                 }
             }
-
+            logger.EndLogging();
             Console.WriteLine("Done");
             Console.ReadKey();
         }
